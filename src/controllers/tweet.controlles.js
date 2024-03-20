@@ -1,4 +1,5 @@
 import { Twitte } from "../models/twitte.models.js";
+import { User } from "../models/user.models.js";
 export const createTweet = async (req, res) => {
   try {
     const { description, id } = req.body;
@@ -59,5 +60,47 @@ export const LikeOrDisLike = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+  }
+};
+
+//get all tweet
+
+export const getAllTweet = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const loggedInUser = await User.findById(id);
+    const loggedInUserTweets = await Twitte.find({
+      userId: id,
+    });
+    const followingUserTweets = await Promise.all(
+      loggedInUser.following.map((otherUserId) => {
+        return Twitte.find({ userId: otherUserId });
+      })
+    );
+    return res.status(200).json({
+      tweets: loggedInUserTweets.concat(...followingUserTweets),
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const FollowingUserTweet = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const loggedInUser = await User.findById(id);
+
+    const followingUserTweets = await Promise.all(
+      loggedInUser.following.map((otherUserId) => {
+        return Twitte.find({ userId: otherUserId });
+      })
+    );
+    return res.status(200).json({
+      tweets: [].concat(...followingUserTweets),
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
