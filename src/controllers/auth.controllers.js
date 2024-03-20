@@ -125,3 +125,93 @@ export const Boookmark = async (req, res) => {
     console.log(error);
   }
 };
+
+//Profile get
+export const getMyprofile = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id).select("-password");
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//getother user
+
+export const getOtherUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const otherUser = await User.find({ _id: { $ne: id } }).select("-password");
+    if (!otherUser) {
+      return res.status(401).json({
+        message: "Currently do not have any user",
+      });
+    }
+    return res.status(200).json({
+      otherUser,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//Follow and UnFollow
+
+export const Follow = async (req, res) => {
+  try {
+    const loggedInUserId = req.body.id;
+    const userId = req.params.id;
+    const loggedInUser = await User.findById(loggedInUserId);
+    const user = await User.findById(userId);
+
+    if (!user.followers.includes(loggedInUserId)) {
+      await user.updateOne({ $push: { followers: loggedInUserId } });
+      await loggedInUser.updateOne({
+        $push: {
+          following: userId,
+        },
+      });
+    } else {
+      return res.status(400).json({
+        message: `user alraedy follow to ${user.name}`,
+      });
+    }
+    return res.status(200).json({
+      message: `${loggedInUser.name} just follow to ${user.name}`,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const unFollow = async (req, res) => {
+  try {
+    const loggedInUserId = req.body.id;
+    const userId = req.params.id;
+    const loggedInUser = await User.findById(loggedInUserId);
+    const user = await User.findById(userId);
+
+    if (!loggedInUser.following.includes(userId)) {
+      await user.updateOne({ $pull: { followers: loggedInUserId } });
+      await loggedInUser.updateOne({
+        $pull: {
+          following: userId,
+        },
+      });
+    } else {
+      return res.status(400).json({
+        message: `user has not  follow yet`,
+      });
+    }
+    return res.status(200).json({
+      message: `${loggedInUser.name} just unfollow to ${user.name}`,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
