@@ -36,7 +36,7 @@ export const deleteTweet = async (req, res) => {
     console.log(error);
   }
 };
-
+//like tweet
 export const LikeOrDisLike = async (req, res) => {
   try {
     const loggedInuserId = req.body.id;

@@ -10,10 +10,7 @@ const twitteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    bookmarks: {
-      type: Array,
-      default: [],
-    },
+
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -98,3 +98,30 @@ export const Logout = (req, res) => {
     success: true,
   });
 };
+
+//user bookemarks implements
+
+export const Boookmark = async (req, res) => {
+  try {
+    const loggedInuserId = req.body.id;
+    const tweetId = req.params.id;
+    const user = await User.findById(loggedInuserId);
+    if (user.bookmarks.includes(tweetId)) {
+      await User.findByIdAndUpdate(loggedInuserId, {
+        $pull: { bookmarks: tweetId },
+      });
+      return res.status(200).json({
+        message: "remove from  Bookmarked",
+      });
+    } else {
+      await User.findByIdAndUpdate(loggedInuserId, {
+        $push: { bookmarks: tweetId },
+      });
+      return res.status(200).json({
+        message: "save Bookmarked",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
