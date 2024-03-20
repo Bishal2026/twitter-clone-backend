@@ -89,3 +89,12 @@ export const Login = async (req, res) => {
     });
   }
 };
+
+//Logout
+
+export const Logout = (req, res) => {
+  return res.cookie("token", "", { expiresIn: new Date(Date.now()) }).json({
+    message: "User Logged out seccessfully",
+    success: true,
+  });
+};
