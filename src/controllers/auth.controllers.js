@@ -79,6 +79,7 @@ export const Login = async (req, res) => {
       .cookie("token", token, { expiresIn: "1d", httpOnly: true })
       .json({
         message: `welcome back ${user.name}`,
+        user,
         success: true,
       });
   } catch (error) {
@@ -195,7 +196,7 @@ export const unFollow = async (req, res) => {
     const loggedInUser = await User.findById(loggedInUserId);
     const user = await User.findById(userId);
 
-    if (!loggedInUser.following.includes(userId)) {
+    if (loggedInUser.following.includes(userId)) {
       await user.updateOne({ $pull: { followers: loggedInUserId } });
       await loggedInUser.updateOne({
         $pull: {
