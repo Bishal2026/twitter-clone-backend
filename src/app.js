@@ -13,7 +13,7 @@ app.use(
 app.use(express.urlencoded({ extended: true, limit: "20kb" }));
 
 const coreOrigin = {
-  origin: "https://twitter-fontend.vercel.app",
+  origin: "http://localhost:3000",
   credentials: true,
 };
 
